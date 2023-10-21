@@ -1,12 +1,13 @@
-from os import scandir
+import os
 
+from rich import print
 
-LIBRARY_PATH = 'L:\Books'
+LIBRARY_PATH = os.environ['LIBRARY_PATH']
 
 
 def find_pdfs_containing_string_in_name(search_string: str) -> None:
     number_of: int = 0
-    for file_name in scandir(LIBRARY_PATH):
+    for file_name in os.scandir(LIBRARY_PATH):
         if file_name.name.endswith('.pdf'):
             if search_string in file_name.name:
                 print(file_name.name)
@@ -21,7 +22,7 @@ def list_number_of_books_file_type() -> None:
     type_mobi: int = 0
     type_other: int = 0
 
-    for file_name in scandir(LIBRARY_PATH):
+    for file_name in os.scandir(LIBRARY_PATH):
         if file_name.name.endswith('.pdf'):
             type_pdf += 1
         elif file_name.name.endswith('.epub'):
