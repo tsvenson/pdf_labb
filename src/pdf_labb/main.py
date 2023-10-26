@@ -1,19 +1,31 @@
 import os
 
 from rich import print
+from pypdf import PdfReader
 
 LIBRARY_PATH = os.environ['LIBRARY_PATH']
 
 
-def find_pdfs_containing_string_in_name(search_string: str) -> None:
-    number_of: int = 0
+def find_pdfs_containing_string_in_name(search_string: str) -> list:
+    matches = []
     for file_name in os.scandir(LIBRARY_PATH):
         if file_name.name.endswith('.pdf'):
             if search_string in file_name.name:
-                print(file_name.name)
-                number_of += 1
-    print(f'\nI found {number_of} books with the string "{search_string}" in it.')
-    return None
+                matches.append(file_name.name)
+    return matches
+
+
+def select_book() -> str:
+    search_files = input('Enter string to search in file name for: ').strip()
+    if len(search_files) > 2:
+        book_list = find_pdfs_containing_string_in_name(search_files)
+    else:
+        print('You need to type in at least 3 character!')
+    
+    for index, book in enumerate(book_list):
+        print(index, book)
+    book_choice = int(input('Select which book: ').strip())
+    return book_list[book_choice]
 
 
 def list_number_of_books_file_type() -> None:
@@ -44,7 +56,7 @@ def list_number_of_books_file_type() -> None:
 def main():
     print('\nSelect what you want to do:')
     print('1 - List number of books in each file format.')
-    print('2 - List books where the filename contains a specific string.')
+    print('2 - Select book with search string and print metadata.')
     print('0 - Quit')
     choice: int = int(input('Make choice: ').strip())
     match choice:
@@ -53,11 +65,8 @@ def main():
         case 1:
             list_number_of_books_file_type()
         case 2:
-            search_files = input('Enter string to search in file name for: ').strip()
-            if len(search_files) > 2:
-                find_pdfs_containing_string_in_name(search_files)
-            else:
-                print('You need to type in at least 3 character!')
+            book = PdfReader(LIBRARY_PATH + '/' + select_book())
+            print(book.metadata)
         case _:
             print('That was a wrong option!')
 
